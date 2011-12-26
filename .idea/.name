@@ -1,0 +1,1 @@
+string-template-maven-plugin

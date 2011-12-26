@@ -26,14 +26,68 @@
 
 package com.webguys.maven.plugin.st;
 
+import java.io.File;
+import java.util.List;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupDir;
+import org.stringtemplate.v4.misc.ErrorBuffer;
 
+/**
+ * Executes string template using a given controller.
+ *
+ * @goal render
+ */
 public class StringTemplateMojo extends AbstractMojo
 {
+    /**
+     * @parameter expression="${basedir}"
+     * @required
+     */
+    private String baseDirectory;
+
+    /**
+     * The collection of templates to render.
+     * @parameter
+     * @required
+     */
+    private List<Template> templates;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        for(Template template : this.templates)
+        {
+            File templateDirectory = this.getTemplateDirectory(template);
+
+            STGroup group = new STGroupDir(templateDirectory.getAbsolutePath());
+            ErrorBuffer errorBuffer = new ErrorBuffer();
+            group.setListener(errorBuffer);
+            ST st = group.getInstanceOf(template.getName());
+
+            if(null == st || !errorBuffer.errors.isEmpty())
+            {
+                throw new MojoExecutionException(String.format("Unable to execute template. %n%s", errorBuffer.toString()));
+            }
+
+            template.invokeController(st);
+            template.installProperties(st);
+            template.render(st);
+        }
+    }
+
+    private File getTemplateDirectory(Template template)
+    {
+        File templateDirectory = template.getDirectory();
+        if(!templateDirectory.isAbsolute())
+        {
+            templateDirectory = new File(this.baseDirectory, templateDirectory.getPath());
+        }
+
+        return templateDirectory;
     }
 }
