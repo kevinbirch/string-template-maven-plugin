@@ -31,18 +31,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironment;
 
 public class Template
 {
-    /**
-     * @parameter expression="${basedir}
-     * @required
-     */
-    private String baseDirectory;
-
     /**
      * The path to the template file's parent directory.
      *
@@ -91,11 +88,11 @@ public class Template
         return name;
     }
 
-    public void invokeController(ST st) throws MojoExecutionException
+    public void invokeController(ST st, Log log, ExecutionEnvironment executionEnvironment) throws MojoExecutionException
     {
         if(null != this.controller)
         {
-            this.controller.invoke(st);
+            this.controller.invoke(st, executionEnvironment, log);
         }
     }
 
@@ -110,11 +107,12 @@ public class Template
         }
     }
 
-    public void render(ST st) throws MojoExecutionException
+    public void render(ST st, MavenProject project, Log log) throws MojoExecutionException
     {
         try
         {
-            File outputFile = this.prepareOutputFile();
+            File outputFile = this.prepareOutputFile(project.getBasedir());
+            this.prepareCompilerSourceRoot(outputFile, project, log);
             FileWriter fileWriter = new FileWriter(outputFile);
             ErrorBuffer listener = new ErrorBuffer();
             st.write(new AutoIndentWriter(fileWriter), listener);
@@ -132,12 +130,12 @@ public class Template
         }
     }
 
-    private File prepareOutputFile() throws MojoExecutionException, IOException
+    private File prepareOutputFile(File baseDirectory) throws MojoExecutionException, IOException
     {
         File outputFile = this.target;
         if(!outputFile.isAbsolute())
         {
-            outputFile = new File(this.baseDirectory, outputFile.getPath());
+            outputFile = new File(baseDirectory, outputFile.getPath());
         }
 
         if(!outputFile.exists())
@@ -146,9 +144,25 @@ public class Template
             {
                 throw new MojoExecutionException(String.format("Unable to fully create the output directory: %s", this.target.getParentFile()));
             }
-            outputFile.createNewFile();
+            if(!outputFile.createNewFile())
+            {
+                throw new MojoExecutionException(String.format("Unable to create the output file: %s", this.target));
+            }
         }
 
         return outputFile;
+    }
+
+    private void prepareCompilerSourceRoot(File file, MavenProject project, Log log)
+    {
+        String path = file.getPath();
+        if(file.getName().endsWith("java") && path.contains("generated-sources"))
+        {
+            int index = path.indexOf("generated-sources") + 18;
+            index = path.indexOf("/", index);
+            String sourceRoot = path.substring(0, index);
+            log.info("Adding compile source root: " + sourceRoot);
+            project.addCompileSourceRoot(sourceRoot);
+        }
     }
 }

@@ -56,3 +56,11 @@ method to invoke.  The method can be a static or instance method, the type will 
 time.
 2. <properties> - Ths element specifies a set of static name-value pairs to provide to the template.  Keys are element
 names and values are the text child of the element.
+
+## Other features
+
+1. If a output of a template is a Java file and it is written to a subdirectory of target/generated-sources, then that
+subdirectory will be automatically added to the compile source paths.  You can disable this on a per-controller basis
+by setting the <compile> attribute to false.
+2. If the class file for the controller is not available when the plugin is run, it will attempt to be compiled.  It is
+assumed that the source for the controller is in the current project.

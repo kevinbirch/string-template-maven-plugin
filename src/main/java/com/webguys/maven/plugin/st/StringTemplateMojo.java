@@ -29,13 +29,18 @@ package com.webguys.maven.plugin.st;
 import java.io.File;
 import java.util.List;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 
 /**
  * Executes string template using a given controller.
@@ -45,10 +50,30 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 public class StringTemplateMojo extends AbstractMojo
 {
     /**
-     * @parameter expression="${basedir}"
+     * The Maven Project Object
+     *
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    private MavenProject project;
+
+    /**
+     * The Maven Session Object
+     *
+     * @parameter expression="${session}"
+     * @required
+     * @readonly
+     */
+    private MavenSession session;
+
+    /**
+     * The Maven PluginManager Object
+     *
+     * @component
      * @required
      */
-    private String baseDirectory;
+    private BuildPluginManager pluginManager;
 
     /**
      * The collection of templates to render.
@@ -74,9 +99,9 @@ public class StringTemplateMojo extends AbstractMojo
                 throw new MojoExecutionException(String.format("Unable to execute template. %n%s", errorBuffer.toString()));
             }
 
-            template.invokeController(st);
+            template.invokeController(st, this.getLog(), executionEnvironment(this.project, this.session, this.pluginManager));
             template.installProperties(st);
-            template.render(st);
+            template.render(st, this.project, this.getLog());
         }
     }
 
@@ -85,7 +110,7 @@ public class StringTemplateMojo extends AbstractMojo
         File templateDirectory = template.getDirectory();
         if(!templateDirectory.isAbsolute())
         {
-            templateDirectory = new File(this.baseDirectory, templateDirectory.getPath());
+            templateDirectory = new File(this.project.getBasedir(), templateDirectory.getPath());
         }
 
         return templateDirectory;
