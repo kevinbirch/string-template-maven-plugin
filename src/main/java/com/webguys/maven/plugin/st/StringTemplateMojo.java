@@ -29,6 +29,7 @@ package com.webguys.maven.plugin.st;
 import java.io.File;
 import java.util.List;
 
+import org.apache.maven.ProjectDependenciesResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
@@ -76,6 +77,14 @@ public class StringTemplateMojo extends AbstractMojo
     private BuildPluginManager pluginManager;
 
     /**
+     * The Maven ProjectDependenciesResolver Object
+     *
+     * @component
+     * @required
+     */
+    private ProjectDependenciesResolver dependenciesResolver;
+
+    /**
      * The collection of templates to render.
      * @parameter
      * @required
@@ -99,7 +108,7 @@ public class StringTemplateMojo extends AbstractMojo
                 throw new MojoExecutionException(String.format("Unable to execute template. %n%s", errorBuffer.toString()));
             }
 
-            template.invokeController(st, this.getLog(), executionEnvironment(this.project, this.session, this.pluginManager));
+            template.invokeController(st, this.getLog(), executionEnvironment(this.project, this.session, this.pluginManager), this.dependenciesResolver);
             template.installProperties(st);
             template.render(st, this.project, this.getLog());
         }

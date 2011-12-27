@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.maven.ProjectDependenciesResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -88,11 +89,11 @@ public class Template
         return name;
     }
 
-    public void invokeController(ST st, Log log, ExecutionEnvironment executionEnvironment) throws MojoExecutionException
+    public void invokeController(ST st, Log log, ExecutionEnvironment executionEnvironment, ProjectDependenciesResolver dependenciesResolver) throws MojoExecutionException
     {
         if(null != this.controller)
         {
-            this.controller.invoke(st, executionEnvironment, log);
+            this.controller.invoke(st, executionEnvironment, dependenciesResolver, log);
         }
     }
 

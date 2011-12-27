@@ -36,11 +36,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.maven.ProjectDependenciesResolver;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.sonatype.aether.util.artifact.JavaScopes;
 import org.stringtemplate.v4.ST;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
@@ -85,16 +89,16 @@ public class Controller
      */
     private String compilerVersion = "2.3.2";
 
-    public void invoke(ST st, ExecutionEnvironment executionEnvironment, Log log) throws MojoExecutionException
+    public void invoke(ST st, ExecutionEnvironment executionEnvironment, ProjectDependenciesResolver dependenciesResolver, Log log) throws MojoExecutionException
     {
         try
         {
-            Class controllerClass = this.findControllerClass(log, executionEnvironment);
+            Class controllerClass = this.findControllerClass(dependenciesResolver, executionEnvironment, log);
             Method method = this.getMethod(controllerClass);
 
-            Object result = this.invoke(controllerClass, method, log);
+            Object results = this.invoke(controllerClass, method, log);
 
-            this.applyResults(st, result);
+            this.applyResults(st, results);
         }
         catch(Exception e)
         {
@@ -102,22 +106,22 @@ public class Controller
         }
     }
 
-    private Class findControllerClass(Log log, ExecutionEnvironment executionEnvironment)
-        throws MojoExecutionException, ClassNotFoundException, MalformedURLException, DependencyResolutionRequiredException
+    private Class findControllerClass(ProjectDependenciesResolver dependenciesResolver, ExecutionEnvironment executionEnvironment, Log log)
+        throws MojoExecutionException, ClassNotFoundException, MalformedURLException, ArtifactResolutionException, ArtifactNotFoundException
     {
         try
         {
             MavenProject project = executionEnvironment.getMavenProject();
 
-            Set<Artifact> originalArtifacts = this.configureArtifacts(project, log);
-            return this.loadController(project, originalArtifacts, log);
+            Set<Artifact> originalArtifacts = this.configureArtifacts(project);
+            return this.loadController(project, executionEnvironment.getMavenSession(), dependenciesResolver, originalArtifacts);
         }
         catch(ClassNotFoundException e)
         {
             if(this.compile)
             {
                 log.info(String.format("Unable to find the class: %s.  Attempting to compile it...", this.className));
-                return this.compileAndLoadController(log, executionEnvironment);
+                return this.compileAndLoadController(log, dependenciesResolver, executionEnvironment);
             }
             else
             {
@@ -126,19 +130,18 @@ public class Controller
         }
     }
 
-    private Class compileAndLoadController(Log log, ExecutionEnvironment executionEnvironment)
-        throws MojoExecutionException, ClassNotFoundException, MalformedURLException, DependencyResolutionRequiredException
+    private Class compileAndLoadController(Log log, ProjectDependenciesResolver dependenciesResolver, ExecutionEnvironment executionEnvironment)
+        throws MojoExecutionException, ClassNotFoundException, MalformedURLException, ArtifactResolutionException, ArtifactNotFoundException
     {
         MavenProject project = executionEnvironment.getMavenProject();
 
-        Set<Artifact> originalArtifacts = this.configureArtifacts(project, log);
+        Set<Artifact> originalArtifacts = this.configureArtifacts(project);
         this.executeCompilerPlugin(executionEnvironment, log);
-        return this.loadController(project, originalArtifacts, log);
+        return this.loadController(project, executionEnvironment.getMavenSession(), dependenciesResolver, originalArtifacts);
     }
 
-    private Set<Artifact> configureArtifacts(MavenProject project, Log log)
+    private Set<Artifact> configureArtifacts(MavenProject project)
     {
-        log.info("Configuring classpath...");
         Set<Artifact> originalArtifacts = project.getArtifacts();
         project.setArtifacts(project.getDependencyArtifacts());
         return originalArtifacts;
@@ -147,9 +150,8 @@ public class Controller
     private void executeCompilerPlugin(ExecutionEnvironment executionEnvironment, Log log) throws MojoExecutionException
     {
         String path = this.className.replace(".", File.separator) + ".java";
-        log.info(String.format("Adding %s to compiler include list...", path));
+        log.info(String.format("Compiling %s...", path));
 
-        log.info("Compiling...");
         executeMojo(
             plugin(
                 groupId("org.apache.maven.plugins"),
@@ -158,7 +160,6 @@ public class Controller
             ),
             goal("compile"),
             configuration(
-                element(name("verbose"), "true"),
                 element(name("source"), sourceVersion),
                 element(name("target"), targetVersion),
                 element(name("includes"), element("include", path))
@@ -167,18 +168,21 @@ public class Controller
         );
     }
 
-    private Class loadController(MavenProject project, Set<Artifact> originalArtifacts, Log log)
-        throws DependencyResolutionRequiredException, MalformedURLException, ClassNotFoundException
+    private Class loadController(MavenProject project, MavenSession session, ProjectDependenciesResolver dependenciesResolver, Set<Artifact> originalArtifacts)
+        throws MalformedURLException, ClassNotFoundException, ArtifactResolutionException, ArtifactNotFoundException
     {
-        log.info("Loading controller class file...");
+        ArrayList<String> scopes = new ArrayList<String>(1);
+        scopes.add(JavaScopes.RUNTIME);
+        Set<Artifact> artifacts = dependenciesResolver.resolve(project, scopes, session);
+
         ArrayList<URL> urls = new ArrayList<URL>();
-        for(Object element : project.getRuntimeClasspathElements())
+        urls.add(new File(project.getBuild().getOutputDirectory()).getAbsoluteFile().toURI().toURL());
+        for(Artifact artifact : artifacts)
         {
-            urls.add(new File((String)element).getAbsoluteFile().toURI().toURL());
+            urls.add(artifact.getFile().getAbsoluteFile().toURI().toURL());
         }
         ClassLoader loader = URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]), this.getClass().getClassLoader());
 
-        log.info("Resetting classpath...");
         project.setArtifacts(originalArtifacts);
 
         return loader.loadClass(this.className);
