@@ -89,7 +89,7 @@ public class Template
         return name;
     }
 
-    public void invokeController(ST st, Log log, ExecutionEnvironment executionEnvironment, ProjectDependenciesResolver dependenciesResolver) throws MojoExecutionException
+    public void invokeController(ST st, ExecutionEnvironment executionEnvironment, ProjectDependenciesResolver dependenciesResolver, Log log) throws MojoExecutionException
     {
         if(null != this.controller)
         {

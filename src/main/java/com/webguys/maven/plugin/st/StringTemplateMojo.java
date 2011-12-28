@@ -40,6 +40,7 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironment;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 
@@ -108,7 +109,8 @@ public class StringTemplateMojo extends AbstractMojo
                 throw new MojoExecutionException(String.format("Unable to execute template. %n%s", errorBuffer.toString()));
             }
 
-            template.invokeController(st, this.getLog(), executionEnvironment(this.project, this.session, this.pluginManager), this.dependenciesResolver);
+            ExecutionEnvironment executionEnvironment = executionEnvironment(this.project, this.session, this.pluginManager);
+            template.invokeController(st, executionEnvironment, this.dependenciesResolver, this.getLog());
             template.installProperties(st);
             template.render(st, this.project, this.getLog());
         }
