@@ -112,6 +112,7 @@ public class StringTemplateMojo extends AbstractMojo
             ExecutionEnvironment executionEnvironment = executionEnvironment(this.project, this.session, this.pluginManager);
             template.invokeController(st, executionEnvironment, this.dependenciesResolver, this.getLog());
             template.installProperties(st);
+
             template.render(st, this.project, this.getLog());
         }
     }
