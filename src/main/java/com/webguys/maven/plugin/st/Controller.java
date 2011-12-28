@@ -70,7 +70,7 @@ public class Controller
     /**
      * Should the this controller attempt to be compiled?
      *
-     * @parameter
+     * @parameter default-value="true"
      */
     private boolean compile = true;
 
