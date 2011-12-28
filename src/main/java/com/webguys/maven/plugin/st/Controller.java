@@ -111,10 +111,7 @@ public class Controller
     {
         try
         {
-            MavenProject project = executionEnvironment.getMavenProject();
-
-            Set<Artifact> originalArtifacts = this.configureArtifacts(project);
-            return this.loadController(project, executionEnvironment.getMavenSession(), dependenciesResolver, originalArtifacts);
+            return this.loadController(executionEnvironment.getMavenProject(), executionEnvironment.getMavenSession(), dependenciesResolver);
         }
         catch(ClassNotFoundException e)
         {
@@ -137,7 +134,9 @@ public class Controller
 
         Set<Artifact> originalArtifacts = this.configureArtifacts(project);
         this.executeCompilerPlugin(executionEnvironment, log);
-        return this.loadController(project, executionEnvironment.getMavenSession(), dependenciesResolver, originalArtifacts);
+        Class result = this.loadController(project, executionEnvironment.getMavenSession(), dependenciesResolver);
+        project.setArtifacts(originalArtifacts);
+        return result;
     }
 
     private Set<Artifact> configureArtifacts(MavenProject project)
@@ -168,7 +167,7 @@ public class Controller
         );
     }
 
-    private Class loadController(MavenProject project, MavenSession session, ProjectDependenciesResolver dependenciesResolver, Set<Artifact> originalArtifacts)
+    private Class loadController(MavenProject project, MavenSession session, ProjectDependenciesResolver dependenciesResolver)
         throws MalformedURLException, ClassNotFoundException, ArtifactResolutionException, ArtifactNotFoundException
     {
         ArrayList<String> scopes = new ArrayList<String>(1);
@@ -181,10 +180,8 @@ public class Controller
         {
             urls.add(artifact.getFile().getAbsoluteFile().toURI().toURL());
         }
+
         ClassLoader loader = URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]), this.getClass().getClassLoader());
-
-        project.setArtifacts(originalArtifacts);
-
         return loader.loadClass(this.className);
     }
 
