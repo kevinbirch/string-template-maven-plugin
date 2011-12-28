@@ -55,7 +55,9 @@ template.  The children elements are <className> for the fully qualified classna
 method to invoke.  The method can be a static or instance method, the type will be automatically detected at invocation
 time.
 2. <properties> - Ths element specifies a set of static name-value pairs to provide to the template.  Keys are element
-names and values are the text child of the element.
+names and values are the text child of the element.  N.B. The properties are installed into the template after the
+results of the controller, so if there are any name collisions then the value type will be automatically converted into
+a list type by StringTemplate.
 
 ## Other features
 
