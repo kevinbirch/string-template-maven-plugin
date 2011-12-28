@@ -44,9 +44,9 @@ The configuration looks like the following:
 
 The configuration consists of a set of <template> elements that *must* contain:
 
-1. <directory> - The absolute or relative path to the directory where the template files to be processed reside.
-2. <name> - The name of the template to process.
-3. <target> - The absolute or relative path to the file to write the template processing results to.
+1. \<directory> - The absolute or relative path to the directory where the template files to be processed reside.
+2. \<name> - The name of the template to process.
+3. \<target> - The absolute or relative path to the file to write the template processing results to.
 
 The <template> element also *may* contain:
 
