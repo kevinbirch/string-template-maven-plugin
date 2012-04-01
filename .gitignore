@@ -1,4 +1,5 @@
 target
+settings.xml
 
 # intellij files
 *.iws

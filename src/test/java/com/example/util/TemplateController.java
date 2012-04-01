@@ -24,17 +24,16 @@
 
 package com.example.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 public class TemplateController
 {
     public Map<String, Object> getProperties()
     {
         HashMap<String, Object> result = new HashMap<String, Object>();
-        result.put("members", Lists.newArrayList("foo", "bar", "baz", "quaz"));
+        result.put("members", Arrays.asList("foo", "bar", "baz", "quaz"));
 
         return result;
     }

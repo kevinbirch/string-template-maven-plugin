@@ -2,12 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
-        <version>5</version>
+        <version>7</version>
     </parent>
 
     <prerequisites>
@@ -21,7 +22,31 @@
     <groupId>com.webguys</groupId>
     <artifactId>string-template-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
+
+    <organization>
+        <name>The WebGuys</name>
+    </organization>
+
+    <name>String Template Maven Plugin</name>
+    <description>This plugin allows you to execute [StringTemplate](http://www.stringtemplate.org/) template files
+        during your build. The values for templates can come from static declarations or from a Java class specified to
+        be executed.
+    </description>
+    <inceptionYear>2011</inceptionYear>
+
+    <url>https://github.com/kevinbirch/string-template-maven-plugin</url>
+    <scm>
+        <connection>scm:git:git://github.com/kevinbirch/string-template-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/kevinbirch/string-template-maven-plugin.git
+        </developerConnection>
+        <url>https://github.com/kevinbirch/string-template-maven-plugin</url>
+    </scm>
+
+    <issueManagement>
+        <url>https://github.com/kevinbirch/string-template-maven-plugin/issues</url>
+        <system>github</system>
+    </issueManagement>
 
     <licenses>
         <license>
@@ -44,12 +69,6 @@
     </developers>
 
     <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>10.0.1</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -91,7 +110,7 @@
 
     <build>
         <plugins>
-            
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
@@ -99,6 +118,58 @@
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <doctitle>StringTemplate Maven Plugin - ${project.version}</doctitle>
+                    <windowtitle>StringTemplate Maven Plugin - ${project.version}</windowtitle>
+                    <show>public</show>
+                    <links>
+                        <link>http://docs.oracle.com/javase/6/docs/api/</link>
+                    </links>
+                    <destDir>${project.version}</destDir>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
