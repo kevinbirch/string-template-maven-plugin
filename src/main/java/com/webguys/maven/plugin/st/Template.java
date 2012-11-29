@@ -24,12 +24,6 @@
 
 package com.webguys.maven.plugin.st;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.maven.ProjectDependenciesResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -38,6 +32,12 @@ import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironment;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Template
 {
@@ -160,7 +160,7 @@ public class Template
         if(file.getName().endsWith("java") && path.contains("generated-sources"))
         {
             int index = path.indexOf("generated-sources") + 18;
-            index = path.indexOf("/", index);
+            index = path.indexOf(File.separator, index);
             String sourceRoot = path.substring(0, index);
             log.info("Adding compile source root: " + sourceRoot);
             project.addCompileSourceRoot(sourceRoot);
