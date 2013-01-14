@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2011 Kevin Birch <kevin.birch@gmail.com>. Some rights reserved.
+ * Copyright (c) 2011 Kevin Birch <kmb@pobox.com>. Some rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -24,6 +24,17 @@
 
 package com.webguys.maven.plugin.st;
 
+import org.apache.maven.ProjectDependenciesResolver;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
+import org.sonatype.aether.util.artifact.JavaScopes;
+import org.stringtemplate.v4.ST;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,17 +46,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.apache.maven.ProjectDependenciesResolver;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
-import org.sonatype.aether.util.artifact.JavaScopes;
-import org.stringtemplate.v4.ST;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
