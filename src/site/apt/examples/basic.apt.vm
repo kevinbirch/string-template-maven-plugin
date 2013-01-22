@@ -1,0 +1,159 @@
+            -------------------------------
+            Using The StringTemplate Plugin
+            -------------------------------
+
+Using The StringTemplate Plugin
+
+* Add the Plugin
+
+  The following configuration shows a complete configuration example:
+
++-----+
+
+<project>
+    ...
+    <build>
+        <plugins>
+            ...
+            <plugin>
+                <groupId>com.webguys</groupId>
+                <artifactId>string-template-maven-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                    <templates>
+                        <template>
+                            <directory>${basedir}/src/main/string-template</directory>
+                            <name>foo</name>
+                            <target>${basedir}/target/generated-sources/string-template/com/example/application/Foo.java</target>
+                            <controller>
+                                <className>com.example.application.application.util.TemplateController</className>
+                                <method>getProperties</method>
+                            </controller>
+                            <properties>
+                                <className>Foo</className>
+                                <name>Blastron</name>
+                            </properties>
+                        </template>
+                    </templates>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>render</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    ...
+</project>
+
++-----+
+
+  Notice the use of Maven properties and also the specification of fully qualified paths and class names.  The output
+  file for this template is in a subdirectory of <<<target/generated-sources>>>, so the
+  <<<target/generated-sources/string-template>>> directory will be automatically added to the Maven compile source
+  paths.  Thus, it will be picked up and compiled by the <<<compile>>> phase automatically (assuming that you have
+  associated the plugin with a phase that occurs before <<<compile>>> in the lifecycle).
+
+  In this example, the TemplateController class is assumed to not be available on the classpath when the plugin runs, so
+  the plugin will compile it for you.
+
+* Write the Template
+
+  In this example the template file is <<<src/main/string-template/foo.st>>>.  Generally, the name of the template
+  is also the name of the template file, like Java classes.  This template has three parameters: <<<members>>> (assumed
+  to be a list), <<<name>>> and <<<className>>> (both scalars).  The <<<members>>> parameter comes from the controller,
+  while the others are defined statically in the <<<properties>>> element above.
+
+  A complete StringTemplate definition for <<<src/main/string-template/foo.st>>> follows:
+
++-----+
+
+foo(members, name, className) ::= <<
+package com.example.application;
+
+public class <className>
+{
+    <members:{each | private int <each>;
+    }>
+
+    private String name = "<name>";
+
+    public <className>()
+    {
+
+    }
+
+    public void doIt()
+    {
+
+    }
+}
+>>
+
++-----+
+
+* Make a Controller
+
+  In this example, a controller is used to provide dynamic input to the template.  The return type of the specified
+  method <<must>> be of the type <<<Map\<String, Object\>>>>.  The keys of this map will be treated as template
+  parameter names and added to the template's invocation.  In this case, there is one key in the map: <"members">, which
+  corresponds to the <<<members>>> template parameter seen above.  It is a list type, thus the use of the
+  StringTemplate iteration syntax.
+
+  A complete template class definition that conforms to the above configuration follows:
+
++-----+
+
+package com.example.application.util;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+public class TemplateController
+{
+    public Map<String, Object> getProperties()
+    {
+        HashMap<String, Object> result = new HashMap<String, Object>();
+        result.put("members", Arrays.asList("foo", "bar", "baz", "quaz"));
+
+        return result;
+    }
+}
+
+
++-----+
+
+* Enjoy Your Generated File
+
+  The results of rendering the above template follows:
+
++-----+
+
+package com.example.application;
+
+public class Foo
+{
+    private int foo;
+    private int bar;
+    private int baz;
+    private int quaz;
+
+    private String name = "Blastron";
+
+    public Foo()
+    {
+
+    }
+
+    public void doIt()
+    {
+
+    }
+}
+
++-----+

@@ -26,9 +26,6 @@
 
 package com.webguys.maven.plugin.st;
 
-import java.io.File;
-import java.util.List;
-
 import org.apache.maven.ProjectDependenciesResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
@@ -42,6 +39,9 @@ import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironment;
 
+import java.io.File;
+import java.util.List;
+
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 
 /**
@@ -54,7 +54,7 @@ public class StringTemplateMojo extends AbstractMojo
     /**
      * The Maven Project Object
      *
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */
@@ -63,7 +63,7 @@ public class StringTemplateMojo extends AbstractMojo
     /**
      * The Maven Session Object
      *
-     * @parameter expression="${session}"
+     * @parameter property="session"
      * @required
      * @readonly
      */

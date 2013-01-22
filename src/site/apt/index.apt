@@ -1,0 +1,28 @@
+            ------------
+            Introduction
+            ------------
+
+Maven StringTemplate Plugin
+
+  The StringTemplate Plugin uses the {{{http://www.stringtemplate.org}StringTemplate}} template engine to generate files
+  during your build.  The generated files can be any kind of text file including Java or other source files, and can be
+  included into your build.
+
+  The plugin has special support for generated Java sources files: if the output of a template is a Java source file
+  and it is written to a subdirectory of <<<target/generated-sources>>>, then that subdirectory will be automatically
+  added to the compile source paths.
+
+* Goals Overview
+
+  The StringTemplate Plugin has the following goal:
+
+  * {{{./render-mojo.html}string-template:render}} renders all of the templates specified in the configuration
+
+* Usage
+
+  General instructions on how to use the StringTemplate Plugin can be found on the {{{./usage.html}usage page}}. A
+  complete example is given below.
+
+* Example
+
+  A {{{./examples/basic.html}basic example}} is provided to illustrate the configuration.
