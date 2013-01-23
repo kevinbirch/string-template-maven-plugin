@@ -28,8 +28,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TemplateController
+public class LionForceController
 {
+    public void setProperties(Map<String, String> properties)
+    {
+        if(properties.containsKey("powerLevel"))
+        {
+            System.out.printf("powerLevel: %s!\n", properties.get("powerLevel"));
+        }
+    }
+
     public Map<String, Object> getProperties()
     {
         HashMap<String, Object> result = new HashMap<String, Object>();
