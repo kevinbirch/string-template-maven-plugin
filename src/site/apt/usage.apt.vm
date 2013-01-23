@@ -192,14 +192,3 @@ Usage
     </build>
 
 +-----+
-
-* Running Plugin Goals On Command Line
-
-  It is possible to run StringTemplate Plugin goals from the command line, even if the plugin is not configured in the
-  project:
-
-+-----+
-
-mvn string-template:render
-
-+-----+
