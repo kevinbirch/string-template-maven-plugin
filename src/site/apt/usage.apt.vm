@@ -28,6 +28,9 @@ Usage
                             <controller>
                                 <className>fully-qualified-class-name</className>
                                 <method>method-to-invoke</method>
+                                <properties>
+                                    <key>value</key>
+                                </properties>
                             </controller>
                             <properties>
                                 <name1>value1</name1>
@@ -70,7 +73,8 @@ Usage
   the name of the method to invoke.  The method can be a static <or> instance method, the type will be automatically
   detected at invocation time.  The return type of the specified method <<must>> be of the type
   <<<Map\<String, Object\>>>>.  The keys of this map will be treated as template parameter names and added to the
-  template's invocation.
+  template's invocation.  Properties can also be passed to the controller using a <<<\<properties\>>>> section, see
+  below for more details.
 
   * <<<\<properties\>>>> - Ths element specifies a set of static name-value pairs to provide to the template.  Keys are
   element names and values are the text child of the element.  <<N.B.>> The properties are installed into the template
@@ -80,6 +84,21 @@ Usage
   []
 
   Generally, at least one of <<<\<controller\>>>> or <<<\<properties\>>>> will be needed for each template definition.
+
+* Passing Properties to the Controller
+
+  The <<<\<controller\>>>> element can have an optional <<<\<properties\>>>> child element to pass properties from the 
+  POM file to the controller.  The format of this section is the same as any other <<<\<properties\>>>> section: 
+  element names are keys and the text children of them are values.  In order to support this, the controller <<must>> 
+  have a (class <or> instance) method with the following signature:
+
++-----+
+public void setProperties(java.util.Map)
++-----+
+
+  If properties are configured in the POM and this method exists (either as a class <or> instance method), it will be
+  invoked <<before>> the method specified in the <<<\<method\>>>> element.  The keys and the values of the <<<Map>>>
+  parameter will both be strings.
 
 * Automatic Inclusion of Generated Source Paths
 
