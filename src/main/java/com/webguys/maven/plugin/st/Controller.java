@@ -68,6 +68,13 @@ public class Controller
     private String method;
 
     /**
+     * The static properties to be provided to the controller.
+     *
+     * @parameter
+     */
+    private Map<String, String> properties;
+
+    /**
      * Should the this controller attempt to be compiled?
      *
      * @parameter default-value="true"
@@ -85,9 +92,11 @@ public class Controller
     private String targetVersion = "1.6";
 
     /**
-     * @parameter default-value="2.3.2"
+     * @parameter default-value="3.0"
      */
-    private String compilerVersion = "2.3.2";
+    private String compilerVersion = "3.0";
+
+    private Object controllerInstance = null;
 
     public void invoke(ST st, ExecutionEnvironment executionEnvironment, ProjectDependenciesResolver dependenciesResolver, Log log) throws MojoExecutionException
     {
@@ -96,6 +105,7 @@ public class Controller
             Class controllerClass = this.findControllerClass(dependenciesResolver, executionEnvironment, log);
             Method method = this.getMethod(controllerClass);
 
+            this.applyProperties(controllerClass, this.properties, log);
             Object results = this.invoke(controllerClass, method, log);
 
             this.applyResults(st, results);
@@ -197,17 +207,44 @@ public class Controller
         return method;
     }
 
-    private Object invoke(Class controllerClass, Method method, Log log)
+    private void applyProperties(Class controllerClass, Map<String, String> properties, Log log)
+            throws IllegalAccessException, InvocationTargetException, InstantiationException
+    {
+        if(null == properties || properties.isEmpty())
+        {
+            return;
+        }
+
+        Method setProperties = null;
+        try
+        {
+            setProperties = controllerClass.getMethod("setProperties", Map.class);
+        }
+        catch (NoSuchMethodException ignored)
+        {
+            // ignore
+        }
+        if(null != setProperties)
+        {
+            this.invoke(controllerClass, setProperties, log, properties);
+        }
+    }
+
+    private Object invoke(Class controllerClass, Method method, Log log, Object ... args)
         throws InstantiationException, IllegalAccessException, InvocationTargetException
     {
         Object controller = null;
         if(!Modifier.isStatic(method.getModifiers()))
         {
-            controller = controllerClass.newInstance();
+            if (null == this.controllerInstance)
+            {
+                this.controllerInstance = controllerClass.newInstance();
+            }
+            controller = this.controllerInstance;
         }
 
-        log.info(String.format("Invoking controller: %s.%s()", controllerClass.getName(), method.getName()));
-        return method.invoke(controller);
+        log.info(String.format("Invoking controller method: %s.%s()", controllerClass.getName(), method.getName()));
+        return method.invoke(controller, args);
     }
 
     private void applyResults(ST st, Object result) throws MojoExecutionException
