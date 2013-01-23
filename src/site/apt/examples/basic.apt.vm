@@ -1,8 +1,11 @@
-            -------------------------------
-            Using The StringTemplate Plugin
-            -------------------------------
+            -----------------------------
+            StringTemplate Plugin Example
+            -----------------------------
 
-Using The StringTemplate Plugin
+StringTemplate Plugin Example
+
+  The StringTemplate Plugin uses the {{{http://www.stringtemplate.org}StringTemplate}} template engine to generate files
+  during your build.
 
 * Add the Plugin
 
@@ -23,15 +26,15 @@ Using The StringTemplate Plugin
                     <templates>
                         <template>
                             <directory>${basedir}/src/main/string-template</directory>
-                            <name>foo</name>
-                            <target>${basedir}/target/generated-sources/string-template/com/example/application/Foo.java</target>
+                            <name>voltron</name>
+                            <target>${basedir}/target/generated-sources/string-template/com/example/application/VoltronIII.java</target>
                             <controller>
                                 <className>com.example.application.application.util.TemplateController</className>
                                 <method>getProperties</method>
                             </controller>
                             <properties>
-                                <className>Foo</className>
-                                <name>Blastron</name>
+                                <className>VoltronIII</className>
+                                <robot>Lion</robot>
                             </properties>
                         </template>
                     </templates>
@@ -63,33 +66,48 @@ Using The StringTemplate Plugin
 
 * Write the Template
 
-  In this example the template file is <<<src/main/string-template/foo.st>>>.  Generally, the name of the template
+  In this example the template file is <<<src/main/string-template/voltron.st>>>.  Generally, the name of the template
   is also the name of the template file, like Java classes.  This template has three parameters: <<<members>>> (assumed
-  to be a list), <<<name>>> and <<<className>>> (both scalars).  The <<<members>>> parameter comes from the controller,
+  to be a list), <<<robot>>> and <<<className>>> (both scalars).  The <<<members>>> parameter comes from the controller,
   while the others are defined statically in the <<<properties>>> element above.
 
-  A complete StringTemplate definition for <<<src/main/string-template/foo.st>>> follows:
+  A complete StringTemplate definition for <<<src/main/string-template/voltron.st>>> follows:
 
 +-----+
 
-foo(members, name, className) ::= <<
+voltron(members, robot, className) ::= <<
 package com.example.application;
 
-public class <className>
-{
-    <members:{each | private int <each>;
-    }>
+import com.example.application.<robot>;
 
-    private String name = "<name>";
+public class <className> implements Voltron
+{
+    <members:{each | private <robot> <each>;
+    }>
 
     public <className>()
     {
 
     }
 
-    public void doIt()
+    public void initiateDocking()
     {
+        // ...
+    }
 
+    public void swordAttack()
+    {
+        // ...
+    }
+
+    public void beamAttack()
+    {
+        // ...
+    }
+
+    public void missileAttack()
+    {
+        // ...
     }
 }
 >>
@@ -119,7 +137,7 @@ public class TemplateController
     public Map<String, Object> getProperties()
     {
         HashMap<String, Object> result = new HashMap<String, Object>();
-        result.put("members", Arrays.asList("foo", "bar", "baz", "quaz"));
+        result.put("members", Arrays.asList("black", "red", "green", "blue", "yellow"));
 
         return result;
     }
@@ -136,23 +154,39 @@ public class TemplateController
 
 package com.example.application;
 
-public class Foo
+import com.example.application.Lion;
+
+public class VoltronIII implements Voltron
 {
-    private int foo;
-    private int bar;
-    private int baz;
-    private int quaz;
+    private Lion black;
+    private Lion red;
+    private Lion green;
+    private Lion blue;
+    private Lion yellow;
 
-    private String name = "Blastron";
-
-    public Foo()
+    public VoltronIII()
     {
 
     }
 
-    public void doIt()
+    public void initiateDocking()
     {
+        // ...
+    }
 
+    public void swordAttack()
+    {
+        // ...
+    }
+
+    public void beamAttack()
+    {
+        // ...
+    }
+
+    public void missileAttack()
+    {
+        // ...
     }
 }
 
