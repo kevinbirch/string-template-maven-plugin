@@ -4,5 +4,13 @@
 
 package com.example.application;
 
-public interface Voltron {
+public interface Voltron
+{
+    void initiateDocking();
+
+    void swordAttack();
+
+    void beamAttack();
+
+    void missileAttack();
 }
