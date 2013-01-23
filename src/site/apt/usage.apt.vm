@@ -81,17 +81,81 @@ Usage
 
   Generally, at least one of <<<\<controller\>>>> or <<<\<properties\>>>> will be needed for each template definition.
 
-* Other Features
+* Automatic Inclusion of Generated Source Paths
 
-  * If the output of a template is a Java file and it is written to a subdirectory of <<<target/generated-sources>>>,
-  then that subdirectory will be automatically added to the compile source paths.
+  If the output of a template is a Java file (ends with '.java') and it is written to a subdirectory of
+  <<<target/generated-sources>>>, then that subdirectory will be automatically added to the Maven project's compile
+  source path for that lifecycle execution.  This behavior is applied for all templates, so multiple directories
+  could be added to the compile source path.
 
-  * If the class file for the controller is not available when the plugin is run, the plugin will attempt to be
-  compile it.  It is assumed that the source for the specified controller is in the current project.
+* Automatic Compilation of the Controller Class
+
+  If the class file for the controller is not available when the plugin is run, the plugin will attempt to be
+  compile it.  It is assumed that the source for the specified controller is in the current project.  If the class is
+  not available on the classpath, and either the source file cannot be found or cannot be compiled the build will fail.
+
+* Controlling the Compiler Used for Automatic Compilation of the Controller Class
+
+  You can set the source and target Java versions that are used to automatically compile the controller class.  You can
+  also set the version of the Maven compiler plugin that will be used.  Custom values for these parameters must be
+  valid for their context: the source and target version must be valid for the Java compiler and the plugin version
+  must be a valid Maven compiler plugin version.
+
+  The default values are:
+
+  * Source Version - 1.6
+
+  * Target Version - 1.6
+
+  * Maven Compiler Plugin Version - 3.0
+
+  []
+
+  The following is an example of using custom settings for these parameters:
+
++-----+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.webguys</groupId>
+                <artifactId>string-template-maven-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                    <templates>
+                        <template>
+                            <directory>path-to-template-directory</directory>
+                            <name>template-name</name>
+                            <target>path-to-output-filename</target>
+                            <controller>
+                                <className>fully-qualified-class-name</className>
+                                <method>method-to-invoke</method>
+                                <sourceVersion>1.5</sourceVersion>
+                                <targetVersion>1.5</targetVersion>
+                                <compilerVersion>2.3.2</compilerVersion>
+                            </controller>
+                        </template>
+                    </templates>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>render</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
++-----+
 
 * Disabling Automatic Compilation of Controller Classes
 
-  You can disable this on a per-controller basis by setting the <<<\<compile\>>>> attribute to <<false>>.
+  You can disable this on a per-controller basis by setting the <<<\<compile\>>>> attribute to <<false>>.  If the
+  controller class is not available on the classpath and this setting is false, and exception will be thrown by the
+  plugin and the build will fail.
 
 +-----+
 
