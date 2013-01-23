@@ -29,7 +29,7 @@ StringTemplate Plugin Example
                             <name>voltron</name>
                             <target>${basedir}/target/generated-sources/string-template/com/example/application/VoltronIII.java</target>
                             <controller>
-                                <className>com.example.application.application.util.TemplateController</className>
+                                <className>com.example.application.util.TemplateController</className>
                                 <method>getProperties</method>
                             </controller>
                             <properties>
