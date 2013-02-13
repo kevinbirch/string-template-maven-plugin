@@ -38,6 +38,12 @@ Usage
                             </properties>
                         </template>
                     </templates>
+                    <resource>
+                        <fileName>${basedir}/src/main/resources/source-file.ext</fileName>
+                        <templateDirectory>${basedir}/src/main/string-template</templateDirectory>
+                        <outputDirectory>${basedir}/target/generated-sources/string-template/com/example/application</outputDirectory>
+                        <className>com.example.application.util.ProcessorImpl</className>
+                    </resource>
                 </configuration>
                 <executions>
                     <execution>
@@ -87,9 +93,9 @@ Usage
 
 * Passing Properties to the Controller
 
-  The <<<\<controller\>>>> element can have an optional <<<\<properties\>>>> child element to pass properties from the 
-  POM file to the controller.  The format of this section is the same as any other <<<\<properties\>>>> section: 
-  element names are keys and the text children of them are values.  In order to support this, the controller <<must>> 
+  The <<<\<controller\>>>> element can have an optional <<<\<properties\>>>> child element to pass properties from the
+  POM file to the controller.  The format of this section is the same as any other <<<\<properties\>>>> section:
+  element names are keys and the text children of them are values.  In order to support this, the controller <<must>>
   have a (class <or> instance) method with the following signature:
 
 +-----+

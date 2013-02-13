@@ -38,6 +38,12 @@ StringTemplate Plugin Example
                             </properties>
                         </template>
                     </templates>
+                    <resource>
+                        <fileName>${basedir}/src/main/resources/source-file.ext</fileName>
+                        <templateDirectory>${basedir}/src/main/string-template</templateDirectory>
+                        <outputDirectory>${basedir}/target/generated-sources/string-template/com/example/application</outputDirectory>
+                        <className>com.example.application.util.ProcessorImpl</className>
+                    </resource>
                 </configuration>
                 <executions>
                     <execution>

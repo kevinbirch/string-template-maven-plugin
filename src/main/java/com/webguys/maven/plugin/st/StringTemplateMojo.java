@@ -40,6 +40,7 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironment;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
@@ -88,16 +89,21 @@ public class StringTemplateMojo extends AbstractMojo
     /**
      * The collection of templates to render.
      * @parameter
-     * @required
      */
-    private List<Template> templates;
+    private List<Template> templates = new ArrayList<Template>();
+
+    /**
+     * The resource to render.
+     * @parameter
+     */
+    private Resource resource;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         for(Template template : this.templates)
         {
-            File templateDirectory = this.getTemplateDirectory(template);
+            File templateDirectory = this.getTemplateDirectory(template.getDirectory());
 
             STGroup group = new STGroupDir(templateDirectory.getAbsolutePath());
             ErrorBuffer errorBuffer = new ErrorBuffer();
@@ -115,11 +121,18 @@ public class StringTemplateMojo extends AbstractMojo
 
             template.render(st, this.project, this.getLog());
         }
+
+				if(this.resource != null) {
+					  File templateDirectory = this.getTemplateDirectory(this.resource.getTemplateDirectory());
+					  STGroup group = new STGroupDir(templateDirectory.getAbsolutePath());
+
+            ExecutionEnvironment executionEnvironment = executionEnvironment(this.project, this.session, this.pluginManager);
+            this.resource.invoke(group, executionEnvironment, this.dependenciesResolver, this.getLog());
+				}
     }
 
-    private File getTemplateDirectory(Template template)
+    private File getTemplateDirectory(File templateDirectory)
     {
-        File templateDirectory = template.getDirectory();
         if(!templateDirectory.isAbsolute())
         {
             templateDirectory = new File(this.project.getBasedir(), templateDirectory.getPath());
