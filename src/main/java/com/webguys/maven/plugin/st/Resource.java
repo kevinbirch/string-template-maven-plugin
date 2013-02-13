@@ -43,7 +43,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
  *
- * @author shane
+ * @author thrykol
  */
 public class Resource {
     /**
