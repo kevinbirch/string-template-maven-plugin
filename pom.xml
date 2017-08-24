@@ -187,6 +187,12 @@
 
     <build>
 
+		<resources>
+			<resource>
+    			<directory>resources</directory>
+			</resource>
+		</resources>
+
         <pluginManagement>
             <plugins>
 
@@ -428,6 +434,7 @@
                 </executions>
             </plugin>
 
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -441,6 +448,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
 
         </plugins>
     </build>
