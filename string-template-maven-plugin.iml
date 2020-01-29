@@ -33,10 +33,10 @@
     <orderEntry type="library" name="Maven: org.apache.maven:maven-repository-metadata:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-model-builder:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-aether-provider:3.0.4" level="project" />
-    <orderEntry type="library" name="Maven: org.sonatype.aether:aether-api:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.sonatype.aether:aether-spi:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.sonatype.aether:aether-util:1.13.1" level="project" />
-    <orderEntry type="library" name="Maven: org.sonatype.aether:aether-impl:1.13.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.aether:aether-api:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.aether:aether-spi:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.aether:aether-util:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.aether:aether-impl:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.twdata.maven:mojo-executor:2.0" level="project" />
   </component>
 </module>
