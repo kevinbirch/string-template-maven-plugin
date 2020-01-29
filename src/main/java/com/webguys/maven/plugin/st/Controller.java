@@ -32,7 +32,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.sonatype.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.stringtemplate.v4.ST;
 
 import java.io.File;
